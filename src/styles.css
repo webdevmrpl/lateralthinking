@@ -10,7 +10,6 @@ body {
     color: #333;
     display: flex;
     flex-direction: column;
-    align-items: center;
 }
 
 .menu {
@@ -30,6 +29,7 @@ nav {
 }
 
 .menu-btn {
+    text-decoration: none;
     background-color: #508b76;
     color: white;
     border: none;
@@ -69,15 +69,17 @@ nav {
 }
 
 .card-container {
+
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 30px;
-    margin: 20px;
+    margin: 20px auto;
     width: 90%;
-    max-width: 1200px;
+    max-width: 100%;
 }
 
 .card {
+    text-decoration: none;
     background: white;
     border: 1px solid #ddd;
     border-radius: 10px;
