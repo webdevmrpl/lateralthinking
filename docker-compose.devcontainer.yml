@@ -7,6 +7,9 @@ services:
       - ./:/lateralthinking
     environment:
       IS_LOCAL: True
+    ports:
+      - "3000:3000"
+      - "8001:8001"
     networks:
      - lateralthinking-network
   
@@ -21,6 +24,37 @@ services:
       PGADMIN_DEFAULT_PASSWORD: admin
     networks:
       - lateralthinking-network
+
+  frontend:
+    container_name: lateralthinking-frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    volumes:
+      - ./frontend:/lateralthinking/frontend
+    depends_on:
+      backend:
+        condition: service_started
+    
+    networks:
+      - lateralthinking-network
+
+  postgres:
+    container_name: lateralthinking-postgres
+    image: postgres
+    env_file:
+      - ./backend/var.env
+    volumes:
+       - postgres:/data/postgres
+       - ./init-db.sh:/docker-entrypoint-initdb.d/init-db.sh:ro
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    networks:
+      - lateralthinking-network
+
+volumes:
+  postgres:
 
 networks:
   lateralthinking-network:
