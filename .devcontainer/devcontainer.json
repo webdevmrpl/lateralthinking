@@ -6,6 +6,10 @@
   "containerUser": "root",
   "name": "lateralthinking",
   "workspaceFolder": "/lateralthinking",
+  "postCreateCommand": [
+    "sh",
+    "/lateralthinking/.devcontainer/setup.sh"
+  ],
   "features": {
     "ghcr.io/devcontainers/features/common-utils:2": {
       "configureZshAsDefaultShell": true,
