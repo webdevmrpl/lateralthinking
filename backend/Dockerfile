@@ -7,6 +7,7 @@ RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2
     rm -rf ./aws
 
 COPY requirements.txt .
+RUN pip install -r requirements.txt
 COPY setup.sh .
 RUN ./setup.sh
 
