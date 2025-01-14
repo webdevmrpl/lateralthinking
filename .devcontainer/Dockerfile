@@ -60,8 +60,8 @@ RUN echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' >>
 RUN echo 'eval "$(pyenv init -)"' >> ~/.bashrc
 
 # Install Node.js (LTS version) and npm
-RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - && \
-    apt-get install -y nodejs && \
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | sudo bash - && \
+    sudo apt-get install -y nodejs && \
     # Verify installation
     node -v && \
     npm -v

@@ -7,6 +7,8 @@ services:
       - ./:/lateralthinking
     environment:
       IS_LOCAL: True
+    env_file:
+      - ./backend/var.env
     ports:
       - "3000:3000"
       - "8001:8001"
@@ -39,22 +41,22 @@ services:
     networks:
       - lateralthinking-network
 
-  postgres:
-    container_name: lateralthinking-postgres
-    image: postgres
-    env_file:
-      - ./backend/var.env
+  mongo:
+    container_name: lateralthinking-mongo
+    image: mongo:7.0
     volumes:
-       - postgres:/data/postgres
-       - ./init-db.sh:/docker-entrypoint-initdb.d/init-db.sh:ro
+      - mongodata:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongoadmin
+      MONGO_INITDB_ROOT_PASSWORD: password
     ports:
-      - "5432:5432"
-    restart: unless-stopped
+      - "27017:27017"
     networks:
       - lateralthinking-network
 
 volumes:
-  postgres:
+  mongodata:
+    driver: local
 
 networks:
   lateralthinking-network:
