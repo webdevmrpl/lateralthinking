@@ -1,4 +1,5 @@
 import logging
+from bson import ObjectId
 from fastapi import APIRouter
 
 
@@ -27,3 +28,11 @@ async def create_story(story: Story):
     repo = await get_story_repository()
     await repo.create_story(story)
     return story
+
+
+@router.get("/{story_id}", response_model=Story)
+async def get_story(story_id: str):
+    repo = await get_story_repository()
+    story = await repo.get_story({"_id": story_id})
+
+    return Story.model_validate(story)
