@@ -43,40 +43,34 @@ RUN apt-get update && \
         libpq-dev \
         postgresql-client \
         python3-pip \
-        # Node.js and Yarn dependencies
         gnupg2 \
-        && \
-    # Clean up to reduce image size
-    apt-get clean && \
+        && apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
+# Install pyenv and Python
 RUN curl https://pyenv.run | bash \
     && pyenv install 3.12.3 \
     && pyenv global 3.12.3
 
 # Add pyenv init to shell startup script
-RUN echo 'eval "$(pyenv init --path)"' >> ~/.bashrc
-RUN echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc
-RUN echo 'eval "$(pyenv init -)"' >> ~/.bashrc
+RUN echo 'eval "$(pyenv init --path)"' >> ~/.bashrc && \
+    echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc && \
+    echo 'eval "$(pyenv init -)"' >> ~/.bashrc
 
-# Install Node.js (LTS version) and npm
-RUN curl -fsSL https://deb.nodesource.com/setup_20.x | sudo bash - && \
-    sudo apt-get install -y nodejs && \
-    # Verify installation
+# Install Node.js (v20) + Yarn
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get update && \
+    apt-get install -y nodejs && \
     node -v && \
-    npm -v
-
-# Install Yarn package manager
-RUN npm install --global yarn && \
-    # Verify installation
+    npm -v && \
+    npm install --global yarn && \
     yarn -v
 
-RUN curl -fsSL https://pgp.mongodb.com/server-7.0.asc | sudo tee /usr/share/keyrings/mongodb-server-7.0.gpg > /dev/null && \
-    echo "deb [signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/7.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list
-
-RUN wget -qO - https://pgp.mongodb.com/server-7.0.asc | gpg --dearmor -o /usr/share/keyrings/mongodb-server-7.0.gpg && \
-    echo "deb [signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/7.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list
-
+# Add the MongoDB GPG key (server 7.0) and jammy repo
+RUN curl -fsSL https://pgp.mongodb.com/server-7.0.asc \
+    | gpg --dearmor -o /usr/share/keyrings/mongodb-server-7.0.gpg && \
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/7.0 multiverse" \
+    | tee /etc/apt/sources.list.d/mongodb-org-7.0.list
 
 # Install MongoDB tools and mongosh
 RUN apt-get update && \
@@ -86,3 +80,5 @@ RUN apt-get update && \
 
 # Verify mongosh installation
 RUN mongosh --version
+
+CMD ["/bin/bash"]
