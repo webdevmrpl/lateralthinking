@@ -6,6 +6,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 
 from backend import settings
 from backend.routers.stories import router as stories_router
+from backend.routers.conversations import router as conversations_router
 
 logger = logging.getLogger(__name__)
 
@@ -23,3 +24,4 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 app.include_router(stories_router)
+app.include_router(conversations_router)

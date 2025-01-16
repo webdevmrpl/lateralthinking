@@ -70,3 +70,19 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | sudo bash - && \
 RUN npm install --global yarn && \
     # Verify installation
     yarn -v
+
+RUN curl -fsSL https://pgp.mongodb.com/server-7.0.asc | sudo tee /usr/share/keyrings/mongodb-server-7.0.gpg > /dev/null && \
+    echo "deb [signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/7.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list
+
+RUN wget -qO - https://pgp.mongodb.com/server-7.0.asc | gpg --dearmor -o /usr/share/keyrings/mongodb-server-7.0.gpg && \
+    echo "deb [signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/7.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list
+
+
+# Install MongoDB tools and mongosh
+RUN apt-get update && \
+    apt-get install -y mongodb-mongosh && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Verify mongosh installation
+RUN mongosh --version
