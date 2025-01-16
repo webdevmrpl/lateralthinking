@@ -1,0 +1,2 @@
+- Guessed Key Points Indexes: {indexes}
+- Hints Given: {hints_used}
