@@ -74,6 +74,18 @@ class Conversation(LateralBase):
         if response.hint_given:
             self.hints_used += 1
 
+    def reset_game(self, system_prompt: str):
+        self.guessed_key_points = [False for _ in self.story.key_points]
+        self.hints_used = 0
+        self.progress_percent = 0.0
+        self.messages = [
+            ConversationMessage(
+                role="system",
+                content="",
+            )
+        ]
+        self.update_system_prompt_with_game_state(system_prompt)
+
 
 class UserMessage(BaseModel):
     session_id: str
