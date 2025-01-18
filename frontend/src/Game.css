@@ -1,29 +1,63 @@
+.game-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+}
+
+.menu {
+    flex-shrink: 0;
+}
+
+.content {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+.keypoints {
+    width: 250px;
+    padding: 20px;
+    background-color: #f5f5f5;
+    border-right: 1px solid #ccc;
+    overflow-y: auto;
+}
+
+.keypoints h2 {
+    margin-top: 0;
+}
+
+.keypoints ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.keypoints li {
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: #fff;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
 
 .chat-window {
-    width: 80%;
-    max-width: 800px;
-    margin: 20px auto;
-    background: #fff;
-    padding: 20px;
-    border-radius: 10px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
 .messages {
-    margin-bottom: 20px;
-    height: 300px;
+    flex: 1;
     overflow-y: auto;
-    border: 1px solid #ddd;
     padding: 10px;
-    border-radius: 5px;
-}
-
-.message-item {
-    margin: 10px 0;
 }
 
 .input-area {
     display: flex;
     gap: 10px;
+    padding: 10px;
+    border-top: 1px solid #ccc;
 }
 
 .input-area input[type="text"] {
@@ -31,4 +65,48 @@
     padding: 10px;
     border-radius: 5px;
     border: 1px solid #ccc;
+}
+
+.message-item {
+    margin: 10px 0;
+}
+
+.message-item em {
+    color: #888;
+}
+
+.menu-btn {
+    padding: 12px 20px;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.menu-btn.send {
+    background-color: #81c784; /* Light green for send button */
+    color: white;
+}
+
+.menu-btn.send:hover {
+    background-color: #66bb6a; /* Darker green for hover */
+}
+
+.menu-btn.hint {
+    background-color: #ffa726; /* Orange for hint button */
+    color: white;
+}
+
+.menu-btn.hint:hover {
+    background-color: #fb8c00; /* Richer orange for hover */
+}
+
+.menu-btn.restart {
+    background-color: #e57373; /* Soft red for restart button */
+    color: white;
+}
+
+.menu-btn.restart:hover {
+    background-color: #d32f2f; /* Bright red for hover */
 }

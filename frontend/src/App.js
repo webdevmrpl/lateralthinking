@@ -2,13 +2,14 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './Home';
 import Game from './Game';
+import './styles.css';
 
 function App() {
     return (
         <Router>
             <Routes>
                 <Route path="/" element={<Home />} />
-                <Route path="/game/:storyId" element={<Game />} />
+                <Route path="/game/:storyTitle/:storyId" element={<Game />} />
             </Routes>
         </Router>
     );
