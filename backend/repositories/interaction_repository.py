@@ -1,3 +1,4 @@
+from typing import Optional
 import uuid
 import logging
 
@@ -94,7 +95,18 @@ class InteractionRepository:
 
         return conversation
 
-    async def get_chat_by_session(self, session_id: str) -> Conversation:
+    async def get_chat_by_session(self, session_id: str) -> Optional[Conversation]:
         if resp := await self.client.get_item({"session_id": session_id}):
             return Conversation.model_validate(resp)
         return None
+
+    async def reset_chat_by_session_id(self, session_id: str) -> Conversation:
+        conversation = await self.get_chat_by_session(session_id)
+        if not conversation:
+            return None
+
+        conversation.reset_game(await self.create_system_prompt(conversation.story))
+        await self.client.replace_item(
+            conversation.id, conversation.model_dump(exclude={"id"})
+        )
+        return conversation

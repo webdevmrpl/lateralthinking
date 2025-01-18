@@ -37,3 +37,9 @@ async def send_user_message_and_update_db(user_message: UserMessage):
 async def get_chat_by_session(session_id: str):
     interaction_repo = await get_interaction_repository()
     return await interaction_repo.get_chat_by_session(session_id)
+
+
+@router.post("/delete_chat_by_session/{session_id}")
+async def delete_chat_by_session(session_id: str):
+    interaction_repo = await get_interaction_repository()
+    return await interaction_repo.reset_chat_by_session_id(session_id)
