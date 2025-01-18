@@ -66,19 +66,19 @@
           "editor.formatOnSaveMode": "file"
         },
         "workbench.colorCustomizations": {
-          "activityBar.background": "#393C4B",
-          "activityBar.foreground": "#FFE400",
-          "activityBar.activeBorder": "#FFE400",
+          // "activityBar.background": "#393C4B",
+          "activityBar.foreground": "#8833ff",
+          "activityBar.activeBorder": "#8833ff",
           "activityBar.inactiveForeground": "#DADADA",
-          "activityBarBadge.background": "#FFE400",
-          "activityBarBadge.foreground": "#393C4B",
-          "titleBar.activeBackground": "#393C4B",
-          "titleBar.activeForeground": "#FFE400",
-          "titleBar.inactiveBackground": "#393C4BAA",
-          "titleBar.inactiveForeground": "#DADADAAA",
-          "statusBar.background": "#393C4B",
-          "statusBar.foreground": "#FFE400",
-          "statusBar.border": "#FFE400"
+          "activityBarBadge.background": "#8833ff",
+          // "activityBarBadge.foreground": "#393C4B",
+          // "titleBar.activeBackground": "#393C4B",
+          "titleBar.activeForeground": "#8833ff",
+          // "titleBar.inactiveBackground": "#393C4BAA",
+          // "titleBar.inactiveForeground": "#DADADAAA",
+          // "statusBar.background": "#393C4B",
+          "statusBar.foreground": "#8833ff",
+          "statusBar.border": "#8833ff"
         }
       }
     }
