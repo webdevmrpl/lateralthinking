@@ -2,16 +2,17 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Cookies from 'js-cookie';
-import './styles.css';
+import confetti from 'canvas-confetti';
 import './Game.css';
 
 function Game() {
     const { storyTitle, storyId } = useParams();
     const [story, setStory] = useState(null);
-    const [messages, setMessages] = useState([]);
     const [guessedKeyPoints, setGuessedKeyPoints] = useState([]);
+    const [messages, setMessages] = useState([]);
     const [userInput, setUserInput] = useState('');
     const [isTyping, setIsTyping] = useState(false);
+    const [isCompleted, setIsCompleted] = useState(false);
     const messagesEndRef = useRef(null);
     const navigate = useNavigate();
     const sessionId = Cookies.get(`session_id_${storyId}`);
@@ -34,7 +35,7 @@ function Game() {
                 setStory(storyData);
                 setGuessedKeyPoints(response.data.guessed_key_points);
                 const initialMessages = response.data.messages
-                    .filter((msg, index) => index !== 0) // Filter out the first system message
+                    .filter((msg, index) => index !== 0)
                     .map(msg => ({
                         role: msg.role,
                         text: msg.content
@@ -50,6 +51,21 @@ function Game() {
             });
     }, [sessionId, storyId]);
 
+    useEffect(() => {
+        if (story && guessedKeyPoints.every(Boolean)) {
+            setIsCompleted(true);
+            triggerConfetti();
+        }
+    }, [guessedKeyPoints, story]);
+
+    const triggerConfetti = () => {
+        confetti({
+            particleCount: 150,
+            spread: 60,
+            origin: { y: 0.6 }
+        });
+    };
+
     const handleSend = (message) => {
         if (message.trim() === '') return;
 
@@ -62,7 +78,6 @@ function Game() {
         setUserInput('');
         setIsTyping(true);
 
-        // Send user input to the server and get the assistant's response
         axios.post(`http://localhost:8001/conversation/send_user_message`, {
             session_id: sessionId,
             message: message
@@ -73,6 +88,7 @@ function Game() {
                     ...newMessages,
                     { role: 'assistant', text: assistantMessage.content }
                 ]);
+                setGuessedKeyPoints(response.data.guessed_key_points);
                 setIsTyping(false);
             })
             .catch(error => {
@@ -82,64 +98,84 @@ function Game() {
     };
 
     const handleRestart = () => {
-        // Delete the current session cookie
-        Cookies.remove(`session_id_${storyId}`);
-
-        // Create a new session
-        axios.post(`http://localhost:8001/conversation/get_session_id?story_id=${storyId}`)
+        axios.post(`http://localhost:8001/conversation/delete_chat_by_session/${sessionId}`)
+            .then(() => {
+                Cookies.remove(`session_id_${storyId}`);
+                return axios.post(`http://localhost:8001/conversation/get_session_id?story_id=${storyId}`);
+            })
             .then(response => {
-                Cookies.set(`session_id_${storyId}`, response.data.session_id, { expires: 7 }); // Cookie expires in 7 days
-                navigate(0); // Reload the page to start a new game
+                Cookies.set(`session_id_${storyId}`, response.data.session_id, { expires: 7 });
+                navigate(0);
             })
             .catch(error => {
-                console.error('There was an error generating the new session ID!', error);
+                console.error('There was an error restarting the game!', error);
             });
     };
+    
 
     if (!story) {
-        return <div>Loading...</div>;
+        return (
+            <div className="loading-container">
+                <div className="spinner"></div>
+                <p>Loading...</p>
+            </div>
+        );
+    }
+
+    if (isCompleted) {
+        return (
+            <div className="congrats-container">
+                <h1>Congratulations!</h1>
+                <p>You guessed all the key points for this story.</p>
+                <div className="congrats-buttons">
+                    <Link to="/" className="menu-btn">Back to Stories</Link>
+                    <button onClick={handleRestart} className="menu-btn restart">Restart Game</button>
+                </div>
+            </div>
+        );
     }
 
     return (
         <div className="game-container">
             <header className="menu">
                 <nav>
-                    <Link to="/" className="menu-btn">Back to stories</Link>
-                    <div className="language-switch">
-                        <img src="/flag-uk.png" alt="English" className="flag"/>
-                        <img src="/flag-pl.png" alt="Polski" className="flag"/>
-                    </div>
+                    <Link to="/" className="menu-btn">Back to Stories</Link>
                 </nav>
                 <h1 className="title">{story.title.toUpperCase()}</h1>
             </header>
 
             <div className="content">
                 <div className="keypoints">
-                    <h2>Guessed Key Points</h2>
+                    <h2>Guessed Key Points:</h2>
                     <ul>
-                        {guessedKeyPoints.map((keyPoint, index) => (
+                        {story.key_points.map((keyPoint, index) => (
                             guessedKeyPoints[index] && (
-                                <li key={index}>
-                                    {guessedKeyPoints[index]}
+                                <li key={index} className="keypoint-item">
+                                    {keyPoint.key_point}
                                 </li>
                             )
                         ))}
                     </ul>
                 </div>
+
                 <div className="chat-window">
                     <div className="messages">
                         {messages.map((msg, index) => (
-                            <div key={index} className="message-item">
+                            <div
+                                key={index}
+                                className={`message-item ${msg.role === 'user' ? 'user-message' : 'game-message'}`}
+                            >
                                 <strong>{msg.role === 'user' ? 'You:' : 'Game:'}</strong> {msg.text}
                             </div>
                         ))}
                         {isTyping && (
-                            <div className="message-item">
+                            <div className="message-item game-message">
                                 <strong>Game:</strong> <em>typing...</em>
                             </div>
                         )}
                         <div ref={messagesEndRef} />
                     </div>
+
                     <div className="input-area">
                         <input
                             type="text"
@@ -150,9 +186,15 @@ function Game() {
                             }}
                             placeholder="Ask a question..."
                         />
-                        <button className="menu-btn send" onClick={() => handleSend(userInput)}>Send</button>
-                        <button className="menu-btn hint" onClick={() => handleSend('give me a hint')}>Hint</button>
-                        <button className="menu-btn restart" onClick={handleRestart}>Restart Game</button>
+                        <button className="menu-btn send" onClick={() => handleSend(userInput)}>
+                            Send
+                        </button>
+                        <button className="menu-btn hint" onClick={() => handleSend('give me a hint')}>
+                            Hint
+                        </button>
+                        <button className="menu-btn restart" onClick={handleRestart}>
+                            Restart Game
+                        </button>
                     </div>
                 </div>
             </div>

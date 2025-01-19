@@ -3,110 +3,278 @@
     flex-direction: column;
     height: 100vh;
     width: 100vw;
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
 }
 
-.menu {
-    flex-shrink: 0;
+.game-container .menu {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #4b7b67;
+    padding: 20px 30px;
+    color: white;
+    border-bottom: 3px solid #63918b;
 }
 
-.content {
+.game-container .menu-btn {
+    text-decoration: none;
+    background-color: #63918b;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: bold;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    cursor: pointer;
+}
+
+
+.game-container .menu-btn:hover {
+    transform: scale(1.4); /* Slightly increase the size */
+    background-color: #4e7a75; /* Slightly darker green on hover */
+}
+
+
+.game-container .title {
+    font-size: 2rem;
+    font-weight: bold;
+    color: white;
+    text-align: center;
+    letter-spacing: 2px;
+    padding-right: 20%;
+    text-transform: uppercase;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.game-container .content {
     display: flex;
     flex: 1;
     overflow: hidden;
+    gap: 20px;
+    padding: 20px;
 }
 
-.keypoints {
-    width: 250px;
+.game-container .keypoints {
+    width: 300px;
     padding: 20px;
-    background-color: #f5f5f5;
-    border-right: 1px solid #ccc;
+    background-color: #e8f1f1;
+    border-right: 1px solid #cccccc;
+    border-radius: 10px;
     overflow-y: auto;
 }
 
-.keypoints h2 {
+.game-container .keypoints h2 {
     margin-top: 0;
+    color: #4b7b67;
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 15px;
 }
 
-.keypoints ul {
-    list-style-type: none;
+.game-container .keypoints ul {
+    list-style: none;
     padding: 0;
 }
 
-.keypoints li {
+.game-container .keypoint-item {
     margin-bottom: 10px;
     padding: 10px;
-    background-color: #fff;
-    border-radius: 5px;
-    border: 1px solid #ccc;
+    background-color: #ffffff;
+    border-radius: 8px;
+    border: 1px solid #cccccc;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-size: 1rem;
+    color: #555;
 }
 
-.chat-window {
+.game-container .chat-window {
     flex: 1;
     display: flex;
     flex-direction: column;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
     overflow: hidden;
 }
 
-.messages {
+.game-container .messages {
     flex: 1;
     overflow-y: auto;
-    padding: 10px;
-}
-
-.input-area {
+    padding: 20px;
+    background-color: #f4f4f4;
     display: flex;
+    flex-direction: column;
     gap: 10px;
-    padding: 10px;
-    border-top: 1px solid #ccc;
 }
 
-.input-area input[type="text"] {
+.game-container .message-item {
+    max-width: 70%;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #cccccc;
+    font-size: 1rem;
+    line-height: 1.4;
+}
+
+.game-container .game-message {
+    align-self: flex-start;
+    background-color: #d6ecec;
+    color: #004d40;
+}
+
+.game-container .user-message {
+    align-self: flex-end;
+    background-color: #d8eadb;
+    color: #1b5e20;
+}
+
+.game-container .input-area {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 20px;
+    background-color: #f4f4f4;
+    border-top: 1px solid #cccccc;
+}
+
+.game-container .input-area input[type="text"] {
     flex: 1;
-    padding: 10px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
+    padding: 12px 15px;
+    font-size: 1rem;
+    border-radius: 10px;
+    border: 1px solid #cccccc;
+    outline: none;
+    transition: border 0.2s ease;
 }
 
-.message-item {
-    margin: 10px 0;
+.game-container .input-area input[type="text"]:focus {
+    border-color: #63918b;
 }
 
-.message-item em {
-    color: #888;
-}
-
-.menu-btn {
-    padding: 12px 20px;
-    border-radius: 5px;
+.game-container .menu-btn {
+    padding: 15px 25px;
+    border-radius: 10px;
     font-size: 1rem;
     font-weight: bold;
+    border: none;
     cursor: pointer;
-    transition: background 0.3s ease;
 }
 
-.menu-btn.send {
-    background-color: #81c784; /* Light green for send button */
+.game-container .menu-btn.send {
+    background-color: #63918b;
     color: white;
 }
 
-.menu-btn.send:hover {
-    background-color: #66bb6a; /* Darker green for hover */
-}
-
-.menu-btn.hint {
-    background-color: #ffa726; /* Orange for hint button */
+.game-container .menu-btn.hint {
+    background-color: #4b7b67;
     color: white;
 }
 
-.menu-btn.hint:hover {
-    background-color: #fb8c00; /* Richer orange for hover */
-}
-
-.menu-btn.restart {
-    background-color: #e57373; /* Soft red for restart button */
+.game-container .menu-btn.restart {
+    background-color: #e57373;
     color: white;
 }
 
-.menu-btn.restart:hover {
-    background-color: #d32f2f; /* Bright red for hover */
+.game-container .menu-btn:hover {
+    transform: scale(1.05);
+    transition: transform 0.2s, background 0.3s;
+}
+
+.game-container ::-webkit-scrollbar {
+    width: 10px;
+}
+
+.game-container ::-webkit-scrollbar-thumb {
+    background-color: #cccccc;
+    border-radius: 5px;
+}
+
+.game-container ::-webkit-scrollbar-thumb:hover {
+    background-color: #aaaaaa;
+}
+
+.game-container ::-webkit-scrollbar-track {
+    background-color: #f4f4f4;
+}
+
+
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: #f4f4f4;
+    color: #4b7b67; 
+    font-family: 'Arial', sans-serif;
+    font-size: 1.5rem;
+}
+
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #ddd;
+    border-top: 5px solid #4b7b67;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 15px;
+}
+
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.congrats-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: #f4f4f4;
+    text-align: center;
+    color: #4b7b67;
+    font-family: 'Georgia', serif;
+}
+
+.congrats-container h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.congrats-container p {
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.congrats-buttons {
+    display: flex;
+    gap: 20px;
+}
+
+.congrats-buttons .menu-btn {
+    padding: 15px 30px;
+    font-size: 1rem;
+    border-radius: 10px;
+    cursor: pointer;
+    border: none;
+    transition: transform 0.2s, background 0.3s;
+    background-color: #63918b;
+    color: white;
+}
+.congrats-buttons .menu-btn.restart {
+    background-color: #e57373; 
+}
+
+.congrats-buttons .menu-btn:hover {
+    transform: scale(1.05);
 }
