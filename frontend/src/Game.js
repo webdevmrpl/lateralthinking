@@ -8,6 +8,7 @@ import './Game.css';
 function Game() {
     const { storyTitle, storyId } = useParams();
     const [story, setStory] = useState(null);
+    const [hintUsed, setHintUsed] = useState(null);
     const [guessedKeyPoints, setGuessedKeyPoints] = useState([]);
     const [messages, setMessages] = useState([]);
     const [userInput, setUserInput] = useState('');
@@ -34,6 +35,7 @@ function Game() {
                 const storyData = response.data.story;
                 setStory(storyData);
                 setGuessedKeyPoints(response.data.guessed_key_points);
+                setHintUsed(response.data.hints_used);
                 const initialMessages = response.data.messages
                     .filter((msg, index) => index !== 0)
                     .map(msg => ({
@@ -89,6 +91,7 @@ function Game() {
                     { role: 'assistant', text: assistantMessage.content }
                 ]);
                 setGuessedKeyPoints(response.data.guessed_key_points);
+                setHintUsed(response.data.hints_used); // Update hintUsed state
                 setIsTyping(false);
             })
             .catch(error => {
@@ -126,7 +129,7 @@ function Game() {
         return (
             <div className="congrats-container">
                 <h1>Congratulations!</h1>
-                <p>You guessed all the key points for this story.</p>
+                <p>{story.solution}</p>
                 <div className="congrats-buttons">
                     <Link to="/" className="menu-btn">Back to Stories</Link>
                     <button onClick={handleRestart} className="menu-btn restart">Restart Game</button>
@@ -143,10 +146,12 @@ function Game() {
                 </nav>
                 <h1 className="title">{story.title.toUpperCase()}</h1>
             </header>
+            
 
             <div className="content">
                 <div className="keypoints">
-                    <h2>Guessed Key Points:</h2>
+                    <h2>Hint Used: {hintUsed}</h2>
+                    <h2>Guessed Key Points: {guessedKeyPoints.filter(Boolean).length}/{story.key_points.length}</h2>
                     <ul>
                         {story.key_points.map((keyPoint, index) => (
                             guessedKeyPoints[index] && (
