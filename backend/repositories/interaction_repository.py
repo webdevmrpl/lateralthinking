@@ -58,7 +58,7 @@ class InteractionRepository:
             ],
             story=story,
             guessed_key_points=[False for _ in story.key_points],
-        ).update_system_prompt_with_game_state(system_promt)
+        )
 
         await self.client.put_item(conversation.model_dump(exclude={"id"}))
 
@@ -82,12 +82,9 @@ class InteractionRepository:
         )
 
         conversation.messages.append(
-            ConversationMessage(role="assistant", content=response.response_to_user)
+            ConversationMessage(role="assistant", content=response.model_dump_json())
         )
         conversation.update_game_state(response)
-        conversation.update_system_prompt_with_game_state(
-            await self.create_system_prompt(conversation.story)
-        )
 
         await self.client.replace_item(
             conversation.id, conversation.model_dump(exclude={"id"})
