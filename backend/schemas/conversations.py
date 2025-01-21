@@ -68,7 +68,6 @@ class Conversation(LateralBase):
                 content="",
             )
         ]
-        self.update_system_prompt_with_game_state(system_prompt)
 
 
 class UserMessage(BaseModel):
