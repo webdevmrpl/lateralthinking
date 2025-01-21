@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link, useNavigate, matchRoutes } from 'react-router-dom';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import confetti from 'canvas-confetti';
@@ -38,10 +38,15 @@ function Game() {
                 setHintUsed(response.data.hints_used);
                 const initialMessages = response.data.messages
                     .filter((msg, index) => index !== 0)
-                    .map(msg => ({
-                        role: msg.role,
-                        text: msg.content
-                    }));
+                    .map(msg => {
+                        const message = msg.content;
+                        const isParsable = msg.role === 'user' ? msg.content : JSON.parse(message);
+    
+                        return {
+                            role: msg.role,
+                            text: msg.role === 'user' ? isParsable : isParsable.response_to_user
+                        };
+                });
                 setMessages([
                     { role: 'system', text: `You are now playing the puzzle: ${storyData.title}.` },
                     { role: 'system', text: storyData.situation },
@@ -70,28 +75,29 @@ function Game() {
 
     const handleSend = (message) => {
         if (message.trim() === '') return;
-
+    
         const newMessages = [
             ...messages,
             { role: 'user', text: message }
         ];
-
+    
         setMessages(newMessages);
         setUserInput('');
         setIsTyping(true);
-
+    
         axios.post(`http://localhost:8001/conversation/send_user_message`, {
             session_id: sessionId,
             message: message
         })
             .then(response => {
-                const assistantMessage = response.data.messages[messages.length];
+                const assistantMessage = response.data.messages[messages.length].content;
+                const parsedMessage = JSON.parse(assistantMessage);
                 setMessages([
                     ...newMessages,
-                    { role: 'assistant', text: assistantMessage.content }
+                    { role: 'assistant', text: parsedMessage.response_to_user }
                 ]);
                 setGuessedKeyPoints(response.data.guessed_key_points);
-                setHintUsed(response.data.hints_used); // Update hintUsed state
+                setHintUsed(response.data.hints_used);
                 setIsTyping(false);
             })
             .catch(error => {
@@ -99,7 +105,9 @@ function Game() {
                 setIsTyping(false);
             });
     };
+    
 
+    
     const handleRestart = () => {
         axios.post(`http://localhost:8001/conversation/delete_chat_by_session/${sessionId}`)
             .then(() => {
@@ -111,10 +119,9 @@ function Game() {
                 navigate(0);
             })
             .catch(error => {
-                console.error('There was an error restarting the game!', error);
+                console.error('There was an error restarting the session!', error);
             });
     };
-    
 
     if (!story) {
         return (

@@ -176,8 +176,8 @@ body {
     width: 80%;
     max-width: 500px;
     text-align: center;
-    border-radius: 15px; /* Add corner radius */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add shadow for better look */
+    border-radius: 15px; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
 }
 
 .close {
