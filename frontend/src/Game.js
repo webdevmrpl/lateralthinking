@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate, matchRoutes } from 'react-router-dom';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import confetti from 'canvas-confetti';
-import './Game.css';
+import './styles/Game.css';
 
 function Game() {
     const { storyTitle, storyId } = useParams();
