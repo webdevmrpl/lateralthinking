@@ -4,8 +4,6 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 import './Home.css';
 
-
-
 function Home() {
     const [stories, setStories] = useState([]);
     const [isHowToPlayModalOpen, setIsHowToPlayModalOpen] = useState(false);
@@ -125,7 +123,6 @@ function Home() {
             )}
         </div>
     );
-    
 }
 
 export default Home;

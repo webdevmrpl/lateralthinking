@@ -106,8 +106,6 @@ function Game() {
             });
     };
     
-
-    
     const handleRestart = () => {
         axios.post(`http://localhost:8001/conversation/delete_chat_by_session/${sessionId}`)
             .then(() => {
