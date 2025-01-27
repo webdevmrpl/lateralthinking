@@ -90,7 +90,7 @@ body {
     overflow: hidden;
 }
 
-.home .card:hover {
+.home card:hover {
     transform: scale(1.05);
     background-color: #f0f8f7;
     box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
@@ -130,31 +130,7 @@ body {
     color: #333;
 }
 
-.home .rating {
-    font-size: 1rem;
-    color: #fbc02d;
-    font-weight: bold;
-    text-align: right;
-    display: block;
-    position: absolute;
-    bottom: 15px;
-    right: 20px;
-}
-
-@media (max-width: 768px) {
-    .home .card-container {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 480px) {
-    .home .card-container {
-        grid-template-columns: 1fr;
-    }
-}
-
-
-.modal {
+.home .modal {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -168,7 +144,7 @@ body {
     background-color: rgba(0, 0, 0, 0.4);
 }
 
-.modal-content {
+.home .modal-content {
     background-color: #fff;
     margin: auto;
     padding: 20px;
@@ -180,15 +156,15 @@ body {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
 }
 
-.close {
+.home .close {
     color: #aaa;
     float: right;
     font-size: 28px;
     font-weight: bold;
 }
 
-.close:hover,
-.close:focus {
+.home .close:hover,
+.home .close:focus {
     color: black;
     text-decoration: none;
     cursor: pointer;
