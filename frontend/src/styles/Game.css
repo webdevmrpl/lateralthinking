@@ -273,3 +273,136 @@
 .congrats-buttons .menu-btn:hover {
     transform: scale(1.05);
 }
+
+@media (max-width: 600px) {
+    .game-container {
+        padding: 10px;
+    }
+
+    .game-container .menu {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 10px;
+    }
+
+    .game-container .title {
+        font-size: 1.5rem;
+        padding-right: 0;
+        white-space: normal;
+        word-wrap: break-word;
+    }
+
+    .game-container .content {
+        flex-direction: column;
+        gap: 10px;
+        padding: 10px;
+    }
+
+    .game-container .keypoints {
+        width: 95%;
+        padding: 10px;
+    }
+
+    .game-container .chat-window {
+        width: 100%;
+        overflow: hidden;
+    }
+
+    .game-container .messages {
+        overflow-y: auto;
+    }
+
+    .game-container .input-area {
+        flex-direction: column;
+        gap: 10px;
+        padding: 10px;
+    }
+
+    .game-container .input-area input[type="text"] {
+        width: 90%;
+    }
+
+    .game-container .menu-btn {
+        width: 100%;
+        padding: 10px;
+        white-space: nowrap;
+    }
+
+    .congrats-container h1 {
+        font-size: 2rem;
+    }
+
+    .congrats-container p {
+        font-size: 1rem;
+    }
+
+    .congrats-buttons {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .congrats-buttons .menu-btn {
+        width: 100%;
+        padding: 10px;
+    }
+}
+
+@media (min-width: 601px) and (max-width: 1024px) {
+    .game-container {
+        padding: 20px;
+    }
+
+    .game-container .menu {
+        padding: 15px;
+    }
+
+    .game-container .title {
+        font-size: 1.75rem;
+        padding-right: 10%;
+        white-space: normal;
+        word-wrap: break-word;
+    }
+
+    .game-container .content {
+        gap: 15px;
+        padding: 15px;
+    }
+
+    .game-container .keypoints {
+        width: 250px;
+        padding: 15px;
+    }
+
+    .game-container .chat-window {
+        width: calc(100% - 250px);
+    }
+
+    .game-container .input-area {
+        padding: 15px;
+    }
+
+    .game-container .input-area input[type="text"] {
+        width: 100%;
+    }
+
+    .game-container .menu-btn {
+        padding: 12px;
+        white-space: nowrap;
+    }
+
+    .congrats-container h1 {
+        font-size: 2.5rem;
+    }
+
+    .congrats-container p {
+        font-size: 1.25rem;
+    }
+
+    .congrats-buttons {
+        gap: 15px;
+    }
+
+    .congrats-buttons .menu-btn {
+        padding: 12px;
+    }
+}

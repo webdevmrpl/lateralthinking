@@ -169,3 +169,20 @@ body {
     text-decoration: none;
     cursor: pointer;
 }
+
+@media (max-width: 1024px) {
+    .home .card-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .home .card-container {
+        grid-template-columns: repeat(1, 1fr);
+    }
+
+    .home .menu nav {
+        gap: 80px;
+        padding: 0 10px;
+    }
+}
