@@ -9,7 +9,7 @@ class KeyPoint(BaseModel):
 
 
 class Story(LateralBase):
-    id: Optional[str] = Field(..., serialization_alias="_id")
+    id: Optional[str] = Field(default=None, serialization_alias="_id")
     title: str = Field(..., title="Title of the story")
     situation: str = Field(..., title="Situation of the story")
     solution: str = Field(..., title="Solution of the story")

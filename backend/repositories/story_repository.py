@@ -14,7 +14,10 @@ class StoryRepository:
         if old_story := await self.get_story({"title": story.title}):
             return old_story
 
-        return await self.client.put_item(story.model_dump())
+        if story.id:
+            return await self.client.put_item(story.model_dump())
+
+        return await self.client.put_item(story.model_dump(exclude={"id"}))
 
     async def get_story(self, query):
         res = await self.client.get_item(query)
