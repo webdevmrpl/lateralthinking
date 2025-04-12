@@ -16,9 +16,10 @@ An interactive puzzle game where players solve lateral thinking mysteries by ask
 1. Open the Project in VS Code
    - Open the project folder in VS Code.
 2. Set Up OpenAI API Key
-   - Add your OpenAI API key to var.env
-            OPENAI_API_KEY=your_openai_api_key_here
-      
+   - Add your OpenAI API key to var.env:
+      ```env
+      OPENAI_API_KEY=your_openai_api_key_here
+      ```
 3. Set Up Dev Containers
    - Download the Dev Containers extension in VS Code.
    - Press CMD + Shift + R (Mac) or Ctrl + Shift + P (Windows/Linux).
@@ -28,30 +29,37 @@ An interactive puzzle game where players solve lateral thinking mysteries by ask
 4. Run the Backend
    - Open a terminal inside the dev container.
    - Run the following command:
-          uvicorn backend.main:app --host 0.0.0.0 --port 8001
-     
+      ```bash
+      uvicorn backend.main:app --host 0.0.0.0 --port 8001
+      ```
    - The backend will be accessible at http://localhost:8001.
 
 5. Run the Frontend
    - Navigate to the frontend directory:
-          cd frontend
-     
+      ```bash
+      cd frontend
+      ```
    - Install dependencies:
-          npm install
-     
+      ```bash
+      npm install
+      ```
    - Build the frontend:
-          npm build
-     
+      ```bash
+      npm build
+      ```
    - Start the frontend server:
-          npm run start
+      ```bash
+      npm run start
+      ```
      
    - The frontend will be accessible at http://localhost:3000.
 
 6. Add Stories to MongoDB
    - Inside the dev container, open a terminal.
    - Run the following command to import data into MongoDB:
-      bash
-     python -m backend.import_data
+      ```bash
+      python -m backend.import_data
+      ```
      
 
 ### Additional Notes
