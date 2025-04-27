@@ -1,8 +1,8 @@
+import json
+
 from enum import Enum
-from pathlib import Path
-from typing import Optional
-from bson import ObjectId
-from pydantic import BaseModel, Field
+from typing import Optional, Union
+from pydantic import BaseModel, Field, field_serializer
 
 from backend.schemas.story import Story
 from backend.schemas.base import LateralBase
@@ -12,10 +12,13 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class ModelResponse(BaseModel):
-    response_to_user: str
+class ModelData(BaseModel):
     guessed_key_points_indexes: list[int]
     hint_given: bool
+
+
+class ModelResponse(ModelData):
+    response_to_user: str
 
 
 class ConversationRoles(str, Enum):
@@ -27,6 +30,15 @@ class ConversationRoles(str, Enum):
 class ConversationMessage(BaseModel):
     role: ConversationRoles
     content: str
+    model_data: Optional[ModelData] = None
+
+    def model_dump_with_data(self):
+        data = json.loads(self.model_dump_json(exclude={"model_data"}))
+        if self.model_data:
+            model_data_dict = json.loads(self.model_data.model_dump_json())
+            model_data_dict["content"] = data["content"]
+            data["content"] = json.dumps(model_data_dict)
+        return data
 
 
 class KeyPoint(BaseModel):
@@ -43,8 +55,14 @@ class Conversation(LateralBase):
     progress_percent: float = Field(default=0.0)
     story: Optional[Story] = None
 
+    def model_dump_for_db(self):
+        """Serialize for database storage, including model_data in messages"""
+        data = self.model_dump(exclude={"id"}, exclude_none=True)
+        # Replace messages with their database representation
+        data["messages"] = [msg.model_dump_for_db() for msg in self.messages]
+        return data
+
     def update_game_state(self, response: ModelResponse):
-        logger.info(f"GPT response: {response}")
         if response.guessed_key_points_indexes:
             for index in response.guessed_key_points_indexes:
                 if 0 <= index < len(self.guessed_key_points):
@@ -65,7 +83,7 @@ class Conversation(LateralBase):
         self.messages = [
             ConversationMessage(
                 role="system",
-                content="",
+                content=system_prompt,
             )
         ]
 
