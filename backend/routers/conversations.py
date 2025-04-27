@@ -1,22 +1,10 @@
 from fastapi import APIRouter, Depends
 
-from backend.repositories.story_repository import StoryRepository
-from backend.repositories.interaction_repository import InteractionRepository
 from backend.schemas.conversations import UserMessage
+from backend.dependencies import get_interaction_repository
+from backend.repositories.interaction_repository import InteractionRepository
 
 router = APIRouter(prefix="/conversation", tags=["conversation"])
-
-
-async def get_story_repository() -> StoryRepository:
-    from backend.main import app
-
-    return StoryRepository(app.mongodb)
-
-
-async def get_interaction_repository():
-    from backend.main import app
-
-    yield InteractionRepository(app.mongodb)
 
 
 @router.post("/get_session_id")
