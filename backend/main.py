@@ -8,6 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from backend import settings
 from backend.routers.stories import router as stories_router
 from backend.routers.conversations import router as conversations_router
+from backend.routers.users import router as users_router
 
 logger = logging.getLogger(__name__)
 
@@ -35,3 +36,4 @@ app.add_middleware(
 
 app.include_router(stories_router)
 app.include_router(conversations_router)
+app.include_router(users_router)
