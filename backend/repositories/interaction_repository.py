@@ -77,12 +77,15 @@ class InteractionRepository:
         conversation = Conversation.model_validate(conversation_json)
         conversation.messages.append(ConversationMessage(role="user", content=message))
 
-        response = await self.invoke_gpt(
-            [msg.model_dump() for msg in conversation.messages]
-        )
+        messages = [msg.model_dump_with_data() for msg in conversation.messages]
+        response = await self.invoke_gpt(messages)
 
         conversation.messages.append(
-            ConversationMessage(role="assistant", content=response.model_dump_json())
+            ConversationMessage(
+                role="assistant",
+                content=response.response_to_user,
+                model_data=response.model_dump(),
+            )
         )
         conversation.update_game_state(response)
 
