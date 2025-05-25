@@ -54,6 +54,8 @@ class Conversation(LateralBase):
     hints_used: int = Field(default=0)
     progress_percent: float = Field(default=0.0)
     story: Optional[Story] = None
+    score: int = Field(default=0)
+    user_id: Optional[str] = None
 
     def model_dump_for_db(self):
         """Serialize for database storage, including model_data in messages"""
@@ -75,6 +77,19 @@ class Conversation(LateralBase):
 
         if response.hint_given:
             self.hints_used += 1
+
+        self.score = self.calculate_score(self.hints_used, len(self.messages))
+
+    def calculate_score(self, hints_used: int, total_turns: int):
+        base_score = 10000
+        hint_cost_rate = 0.2
+        length_penalty_scaling = 5
+
+        return (
+            base_score
+            * (1 - hints_used * hint_cost_rate)
+            * (1 / (1 + ((total_turns - 1) / length_penalty_scaling)))
+        )
 
     def reset_game(self, system_prompt: str):
         self.guessed_key_points = [False for _ in self.story.key_points]
