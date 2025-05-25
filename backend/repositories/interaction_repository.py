@@ -13,6 +13,7 @@ from backend.schemas.conversations import (
     ConversationMessage,
     ModelResponse,
 )
+from backend.schemas.users import User
 
 logger = logging.getLogger(__name__)
 
@@ -72,7 +73,9 @@ class InteractionRepository:
         )
         return response.choices[0].message.parsed
 
-    async def send_message_to_model(self, session_id: str, message: str):
+    async def send_message_to_model(
+        self, session_id: str, message: str, user: Optional[User] = None
+    ):
         conversation_json = await self.client.get_item({"session_id": session_id})
         conversation = Conversation.model_validate(conversation_json)
         conversation.messages.append(ConversationMessage(role="user", content=message))
@@ -88,6 +91,9 @@ class InteractionRepository:
             )
         )
         conversation.update_game_state(response)
+
+        if user:
+            conversation.username = user.username
 
         await self.client.replace_item(
             conversation.id, conversation.model_dump(exclude={"id"})
@@ -110,3 +116,10 @@ class InteractionRepository:
             conversation.id, conversation.model_dump(exclude={"id"})
         )
         return conversation
+
+    async def get_user_score_by_username(self, username: str) -> int:
+        chats = [
+            Conversation.model_validate(chat)
+            async for chat in await self.client.scan({"username": username})
+        ]
+        return sum(chat.score for chat in chats if chat.progress_percent == 100)

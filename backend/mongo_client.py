@@ -31,5 +31,5 @@ class MongoMotorClient:
     async def delete_item(self, query: dict):
         return await self.db[self.collection].delete_one(query)
 
-    async def scan(self):
-        return self.db[self.collection].find()
+    async def scan(self, query: dict = None):
+        return self.db[self.collection].find(query)

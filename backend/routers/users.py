@@ -1,7 +1,8 @@
 import asyncio
 from authx import TokenPayload
 from concurrent.futures import ThreadPoolExecutor
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Response, status, Request
+from typing import Optional
 
 from backend.settings import security
 from backend.services.user_service import UserService
@@ -52,9 +53,6 @@ async def login_user(
 async def get_current_user(
     current_user: User = Depends(security.get_current_subject),
 ):
-    """
-    Retrieve the current authenticated user's profile.
-    """
     return current_user
 
 
@@ -102,9 +100,7 @@ async def get_new_access_token(
     user_service=Depends(get_user_service),
 ):
     user = await user_service.get_user(refresh.sub)
-    access_token = security.create_access_token(
-        uid=user.email, data={"roles": user.roles}
-    )
+    access_token = security.create_access_token(uid=user.email)
     security.set_access_cookies(token=access_token, response=response)
     return {"access_token": access_token}
 

@@ -55,7 +55,7 @@ class Conversation(LateralBase):
     progress_percent: float = Field(default=0.0)
     story: Optional[Story] = None
     score: int = Field(default=0)
-    user_id: Optional[str] = None
+    username: Optional[str] = None
 
     def model_dump_for_db(self):
         """Serialize for database storage, including model_data in messages"""
