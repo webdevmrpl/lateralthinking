@@ -78,18 +78,29 @@ class Conversation(LateralBase):
         if response.hint_given:
             self.hints_used += 1
 
-        self.score = self.calculate_score(self.hints_used, len(self.messages))
+        user_messages = [msg for msg in self.messages if msg.role == "user"]
+        self.score = self.calculate_score(self.hints_used, len(user_messages))
 
-    def calculate_score(self, hints_used: int, total_turns: int):
-        base_score = 10000
+    def calculate_score(
+        self,
+        hints_used: int,
+        total_turns: int,
+        *,
+        max_hints: int = 3,
+    ) -> int:
+        h = max(0, min(hints_used, max_hints))
+        t = max(1, total_turns)
+
+        base_score = 10_000
         hint_cost_rate = 0.2
-        length_penalty_scaling = 5
+        length_penalty_scaling = 8
 
-        return (
+        score = (
             base_score
-            * (1 - hints_used * hint_cost_rate)
-            * (1 / (1 + ((total_turns - 1) / length_penalty_scaling)))
+            * (1 - h * hint_cost_rate)
+            * (1 / (1 + (t - 1) / length_penalty_scaling))
         )
+        return int(max(0.0, score))
 
     def reset_game(self, system_prompt: str):
         self.guessed_key_points = [False for _ in self.story.key_points]

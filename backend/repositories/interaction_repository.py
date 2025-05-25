@@ -78,7 +78,6 @@ class InteractionRepository:
         conversation.messages.append(ConversationMessage(role="user", content=message))
 
         messages = [msg.model_dump_with_data() for msg in conversation.messages]
-        print(messages[1:])
         response = await self.invoke_gpt(messages)
 
         conversation.messages.append(
