@@ -44,3 +44,11 @@ async def delete_chat_by_session(
     interaction_repo: InteractionRepository = Depends(get_interaction_repository),
 ):
     return await interaction_repo.reset_chat_by_session_id(session_id)
+
+
+@router.get("/user_score/{username}")
+async def get_user_score(
+    username: str,
+    interaction_repo: InteractionRepository = Depends(get_interaction_repository),
+):
+    return await interaction_repo.get_user_score_by_username(username)

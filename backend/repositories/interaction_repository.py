@@ -116,3 +116,10 @@ class InteractionRepository:
             conversation.id, conversation.model_dump(exclude={"id"})
         )
         return conversation
+
+    async def get_user_score_by_username(self, username: str) -> int:
+        chats = [
+            Conversation.model_validate(chat)
+            async for chat in await self.client.scan({"username": username})
+        ]
+        return sum(chat.score for chat in chats if chat.progress_percent == 100)
