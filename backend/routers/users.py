@@ -42,7 +42,6 @@ async def login_user(
         security.set_refresh_cookies(token=refresh_token, response=response)
         return {
             "access_token": access_token,
-            "refresh_token": refresh_token,
             "token_type": "Bearer",
         }
     except Exception as e:
