@@ -1,8 +1,10 @@
+from typing import Optional
 from fastapi import APIRouter, Depends
 
 from backend.schemas.conversations import UserMessage
-from backend.dependencies import get_interaction_repository
+from backend.dependencies import get_current_user_optional, get_interaction_repository
 from backend.repositories.interaction_repository import InteractionRepository
+from backend.schemas.users import User
 
 router = APIRouter(prefix="/conversation", tags=["conversation"])
 
@@ -19,9 +21,12 @@ async def get_session_id_by_story(
 async def send_user_message_and_update_db(
     user_message: UserMessage,
     interaction_repo: InteractionRepository = Depends(get_interaction_repository),
+    current_user: Optional[User] = Depends(get_current_user_optional),
 ):
     return await interaction_repo.send_message_to_model(
-        session_id=user_message.session_id, message=user_message.message
+        session_id=user_message.session_id,
+        message=user_message.message,
+        user=current_user,
     )
 
 
