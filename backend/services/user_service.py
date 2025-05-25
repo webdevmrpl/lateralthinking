@@ -42,9 +42,7 @@ class UserService:
                 status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials"
             )
 
-        access_token = self.security.create_access_token(
-            uid=user.email, data={"roles": user.roles}
-        )
+        access_token = self.security.create_access_token(uid=user.email)
         refresh_token = self.security.create_refresh_token(uid=user.email)
         return access_token, refresh_token
 
