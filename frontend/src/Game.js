@@ -1,12 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useParams, Link, useNavigate, matchRoutes } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import confetti from 'canvas-confetti';
 import './styles/Game.css';
 
 function Game() {
-    const { storyTitle, storyId } = useParams();
+    const { storyId } = useParams(); // storyTitle is not directly used for API calls here
     const [story, setStory] = useState(null);
     const [hintUsed, setHintUsed] = useState(null);
     const [guessedKeyPoints, setGuessedKeyPoints] = useState([]);
@@ -36,30 +36,27 @@ function Game() {
                 setStory(storyData);
                 setGuessedKeyPoints(response.data.guessed_key_points);
                 setHintUsed(response.data.hints_used);
-                const initialMessages = response.data.messages
-                    .filter((msg, index) => index !== 0)
-                    .map(msg => {
-                        const message = msg.content;
-                        const isParsable = msg.role === 'user' ? msg.content : JSON.parse(message);
-    
-                        return {
-                            role: msg.role,
-                            text: msg.role === 'user' ? isParsable : isParsable.response_to_user
-                        };
-                });
+
+                const chatFlowMessages = response.data.messages
+                    .filter((msg, index) => index !== 0) 
+                    .map(msg => ({
+                        role: msg.role,
+                        text: msg.content
+                    }));
+
                 setMessages([
                     { role: 'system', text: `You are now playing the puzzle: ${storyData.title}.` },
                     { role: 'system', text: storyData.situation },
-                    ...initialMessages
+                    ...chatFlowMessages
                 ]);
             })
             .catch(error => {
                 console.error('There was an error fetching the game state!', error);
             });
-    }, [sessionId, storyId]);
+    }, [sessionId, storyId, navigate]);
 
     useEffect(() => {
-        if (story && guessedKeyPoints.every(Boolean)) {
+        if (story && guessedKeyPoints.length > 0 && guessedKeyPoints.every(Boolean)) {
             setIsCompleted(true);
             triggerConfetti();
         }
@@ -73,36 +70,43 @@ function Game() {
         });
     };
 
-    const handleSend = (message) => {
-        if (message.trim() === '') return;
-    
-        const newMessages = [
-            ...messages,
-            { role: 'user', text: message }
-        ];
-    
-        setMessages(newMessages);
+    const handleSend = (messageContent) => {
+        if (messageContent.trim() === '') return;
+
+        const optimisticUserMessage = { role: 'user', text: messageContent };
+        setMessages(prevMessages => [...prevMessages, optimisticUserMessage]);
         setUserInput('');
         setIsTyping(true);
-    
+
         axios.post(`http://localhost:8001/conversation/send_user_message`, {
             session_id: sessionId,
-            message: message
+            message: messageContent
         })
             .then(response => {
-                const assistantMessage = response.data.messages[messages.length].content;
-                const parsedMessage = JSON.parse(assistantMessage);
-                setMessages([
-                    ...newMessages,
-                    { role: 'assistant', text: parsedMessage.response_to_user }
-                ]);
+                const updatedStoryData = response.data.story;
+                setStory(updatedStoryData);
                 setGuessedKeyPoints(response.data.guessed_key_points);
                 setHintUsed(response.data.hints_used);
+                const serverChatFlowMessages = response.data.messages
+                    .filter((msg, index) => index !== 0)
+                    .map(msg => ({
+                        role: msg.role,
+                        text: msg.content
+                    }));
+                
+                setMessages([
+                    { role: 'system', text: `You are now playing the puzzle: ${updatedStoryData.title}.` },
+                    { role: 'system', text: updatedStoryData.situation },
+                    ...serverChatFlowMessages
+                ]);
+
                 setIsTyping(false);
             })
             .catch(error => {
                 console.error('There was an error sending the message!', error);
+                setMessages(prevMessages => prevMessages.filter(m => m !== optimisticUserMessage));
                 setIsTyping(false);
+                setMessages(prevMessages => [...prevMessages, { role: 'system', text: 'Error: Could not send message. Please try again.' }]);
             });
     };
     
@@ -114,7 +118,7 @@ function Game() {
             })
             .then(response => {
                 Cookies.set(`session_id_${storyId}`, response.data.session_id, { expires: 7 });
-                navigate(0);
+                window.location.reload();
             })
             .catch(error => {
                 console.error('There was an error restarting the session!', error);
@@ -149,16 +153,15 @@ function Game() {
                 <nav>
                     <Link to="/" className="menu-btn">Back to Stories</Link>
                 </nav>
-                <h1 className="title">{story.title.toUpperCase()}</h1>
+                <h1 className="title">{story.title ? story.title.toUpperCase() : 'Loading Title...'}</h1>
             </header>
             
-
             <div className="content">
                 <div className="keypoints">
-                    <h2>Hint Used: {hintUsed}</h2>
-                    <h2>Guessed Key Points: {guessedKeyPoints.filter(Boolean).length}/{story.key_points.length}</h2>
+                    <h2>Hint Used: {hintUsed !== null ? hintUsed : 'N/A'}</h2>
+                    <h2>Guessed Key Points: {guessedKeyPoints.filter(Boolean).length}/{story.key_points ? story.key_points.length : 0}</h2>
                     <ul>
-                        {story.key_points.map((keyPoint, index) => (
+                        {story.key_points && story.key_points.map((keyPoint, index) => (
                             guessedKeyPoints[index] && (
                                 <li key={index} className="keypoint-item">
                                     {keyPoint.key_point}
@@ -175,7 +178,7 @@ function Game() {
                                 key={index}
                                 className={`message-item ${msg.role === 'user' ? 'user-message' : 'game-message'}`}
                             >
-                                <strong>{msg.role === 'user' ? 'You:' : 'Game:'}</strong> {msg.text}
+                                <strong>{msg.role === 'user' ? 'You:' : msg.role === 'system' ? 'System:' : 'Game:'}</strong> {msg.text}
                             </div>
                         ))}
                         {isTyping && (
