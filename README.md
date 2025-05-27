@@ -13,58 +13,41 @@ An interactive puzzle game where players solve lateral thinking mysteries by ask
 
 ### Steps to Set Up the Project
 
-1. Open the Project in VS Code
-   - Open the project folder in VS Code.
-2. Set Up OpenAI API Key
-   - Add your OpenAI API key to var.env:
+1. **Clone and Open the Project**
+   - Clone the repository and open the project folder in your preferred editor.
+
+2. **Set Up Environment Variables**
+   - Create a `var.env` file in the `backend` directory:
       ```env
       OPENAI_API_KEY=your_openai_api_key_here
       ```
-3. Set Up Dev Containers
-   - Download the Dev Containers extension in VS Code.
-   - Press CMD + Shift + R (Mac) or Ctrl + Shift + P (Windows/Linux).
-   - Choose Rebuild and Reopen in Container.
-   - The docker-compose.devcontainer.yml file will launch the environment, mounting the local code into the container.
 
-4. Run the Backend
-   - Open a terminal inside the dev container.
-   - Run the following command:
+3. **Start the Application with Docker Compose**
+   - Ensure Docker is running on your system.
+   - From the project root directory, run:
       ```bash
-      uvicorn backend.main:app --host 0.0.0.0 --port 8001
+      docker-compose up --build
       ```
-   - The backend will be accessible at http://localhost:8001.
+   - This command will:
+     - Build and start the backend service (FastAPI)
+     - Build and start the frontend service (React)
+     - Start MongoDB database
+     - Set up networking between all services
 
-5. Run the Frontend
-   - Navigate to the frontend directory:
-      ```bash
-      cd frontend
-      ```
-   - Install dependencies:
-      ```bash
-      npm install
-      ```
-   - Build the frontend:
-      ```bash
-      npm build
-      ```
-   - Start the frontend server:
-      ```bash
-      npm run start
-      ```
-     
-   - The frontend will be accessible at http://localhost:3000.
+4. **Access the Application**
+   - Frontend: http://localhost:3000
+   - Backend API: http://localhost:8001
 
-6. Add Stories to MongoDB
-   - Inside the dev container, open a terminal.
-   - Run the following command to import data into MongoDB:
+5. **Stop the Application**
+   - To stop all services:
       ```bash
-      python -m backend.import_data
+      docker-compose down
       ```
-     
 
 ### Additional Notes
-- Ensure Docker is running before setting up the dev container.
-- If you encounter issues, check the logs in the terminal or restart the dev container.
+- Ensure Docker is running before starting the application.
+- All services will start automatically with `docker-compose up`.
+- If you encounter issues, check the logs with `docker compose logs [service-name]` or restart with `docker compose restart`.
 
 ---
 
@@ -76,7 +59,7 @@ An interactive puzzle game where players solve lateral thinking mysteries by ask
 - Example puzzle:
   > Title: The Office Zombie  
   > Situation: A man shows up daily looking like a zombie. No one questions him. Why?  
-  > Solution: He’s a film makeup artist testing effects.  
+  > Solution: He's a film makeup artist testing effects.  
   > Key Points:  
   > 1. He works in film production.  
   > 2. He wears a zombie costume as part of his job.

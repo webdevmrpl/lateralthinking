@@ -1,22 +1,24 @@
 FROM python:3.12.3
 
-RUN apt update && apt install -y nano tcpdump && rm -rf /var/lib/apt /var/lib/cache/apt
-RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
-    unzip awscliv2.zip && \
-    ./aws/install && \
-    rm -rf ./aws
+WORKDIR /app
 
-COPY requirements.txt .
-RUN pip install -r requirements.txt
-COPY setup.sh .
-RUN ./setup.sh
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
 
-RUN adduser --disabled-password --gecos "" lta
-RUN mkdir /imports && chown lta /imports
+# Install system dependencies
+RUN apt update && apt install -y \
+    build-essential libpq-dev gcc libssl-dev libffi-dev \
+    python3-dev libxml2-dev libxslt1-dev zlib1g-dev libjpeg-dev \
+    libblas-dev liblapack-dev gfortran \
+    && rm -rf /var/lib/apt/lists/*
 
+COPY ./requirements.txt ./requirements.txt
 
-WORKDIR /backend
+COPY ./setup.sh ./setup.sh
+RUN chmod +x ./setup.sh
 
-COPY . .
+RUN pip install --upgrade pip && \
+    pip install -r requirements.txt
 
-CMD ["bash"]
+COPY . ./backend
+

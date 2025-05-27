@@ -117,3 +117,9 @@ class Conversation(LateralBase):
 class UserMessage(BaseModel):
     session_id: str
     message: str
+
+
+class LeaderboardEntry(BaseModel):
+    username: str
+    total_score: int
+    total_games_completed: int

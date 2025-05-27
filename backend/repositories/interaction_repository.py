@@ -12,6 +12,7 @@ from backend.schemas.conversations import (
     Conversation,
     ConversationMessage,
     ModelResponse,
+    LeaderboardEntry,
 )
 from backend.schemas.users import User
 
@@ -123,3 +124,50 @@ class InteractionRepository:
             async for chat in await self.client.scan({"username": username})
         ]
         return sum(chat.score for chat in chats if chat.progress_percent == 100)
+
+    async def get_leaderboard(self) -> list[LeaderboardEntry]:
+        try:
+            pipeline = [
+                {
+                    "$match": {
+                        "username": {"$exists": True, "$ne": None, "$ne": ""},
+                        "progress_percent": 100,
+                        "score": {"$exists": True},
+                    }
+                },
+                {
+                    "$group": {
+                        "_id": "$username",
+                        "total_score": {"$sum": "$score"},
+                        "games_completed": {"$sum": 1},
+                    }
+                },
+                {"$sort": {"total_score": -1}},
+                {"$limit": 10},
+                {
+                    "$project": {
+                        "_id": 0,
+                        "username": "$_id",
+                        "total_score": 1,
+                        "games_completed": 1,
+                    }
+                },
+            ]
+
+            cursor = await self.client.aggregate(pipeline)
+            results = await cursor.to_list(length=None)
+
+            leaderboard = [
+                LeaderboardEntry(
+                    username=result["username"],
+                    total_score=result["total_score"],
+                    total_games_completed=result["games_completed"],
+                )
+                for result in results
+            ]
+
+            return leaderboard
+
+        except Exception as e:
+            logger.exception(f"Error in get_leaderboard aggregation: {e}")
+            return None

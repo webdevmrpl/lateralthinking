@@ -33,3 +33,7 @@ class MongoMotorClient:
 
     async def scan(self, query: dict = None):
         return self.db[self.collection].find(query)
+
+    async def aggregate(self, pipeline: list):
+        """Execute an aggregation pipeline on the collection."""
+        return self.db[self.collection].aggregate(pipeline)

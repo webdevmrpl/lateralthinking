@@ -1,7 +1,7 @@
 from typing import Optional
 from fastapi import APIRouter, Depends
 
-from backend.schemas.conversations import UserMessage
+from backend.schemas.conversations import UserMessage, LeaderboardEntry
 from backend.dependencies import get_current_user_optional, get_interaction_repository
 from backend.repositories.interaction_repository import InteractionRepository
 from backend.schemas.users import User
@@ -52,3 +52,10 @@ async def get_user_score(
     interaction_repo: InteractionRepository = Depends(get_interaction_repository),
 ):
     return await interaction_repo.get_user_score_by_username(username)
+
+
+@router.get("/leaderboard")
+async def get_leaderboard(
+    interaction_repo: InteractionRepository = Depends(get_interaction_repository),
+):
+    return await interaction_repo.get_leaderboard()
