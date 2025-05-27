@@ -1,16 +1,20 @@
 import asyncio
-from authx import TokenPayload
-from concurrent.futures import ThreadPoolExecutor
-from fastapi import APIRouter, Depends, HTTPException, Response, status, Request
 from typing import Optional
+from authx import TokenPayload
+from motor.motor_asyncio import AsyncIOMotorClient
+from fastapi import APIRouter, Depends, HTTPException, Response, status, Request
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
+from backend import settings
 from backend.settings import security
+from backend.dependencies import get_user_service
 from backend.services.user_service import UserService
 from backend.repositories.user_repository import UserRepository
-from backend.dependencies import get_user_repository, get_user_service
 from backend.schemas.users import UserCreate, UserLogin, UserUpdate, User
 
 router = APIRouter(prefix="/users", tags=["Users"])
+
+security_scheme = HTTPBearer(auto_error=False)
 
 
 @router.post("/register", response_model=User, status_code=status.HTTP_201_CREATED)
@@ -49,11 +53,43 @@ async def login_user(
         raise HTTPException(status_code=401, detail=str(e))
 
 
-@router.get("/me")
+async def get_current_user_optional(
+    request: Request, user_service: UserService = Depends(get_user_service)
+) -> Optional[User]:
+    """
+    Get current user if authenticated, otherwise return None.
+    This allows endpoints to be accessible to both authenticated and unauthenticated users.
+    """
+    try:
+        token_getter = security.get_token_from_request(optional=True)
+        token = await token_getter(request)
+        if token is None:
+            return None
+
+        payload = security.verify_token(token)
+        user = await user_service.get_user(payload.sub)
+        return user
+
+    except Exception:
+        return None
+
+
+@router.get(
+    "/me",
+    openapi_extra={"security": [{"BearerAuth": []}, {}]},
+)
 async def get_current_user(
-    current_user: User = Depends(security.get_current_subject),
+    current_user: Optional[User] = Depends(get_current_user_optional),
 ):
-    return current_user
+    """
+    Retrieve the current authenticated user's profile if logged in,
+    otherwise return a message indicating the user is not authenticated.
+    This endpoint is public but provides different responses based on authentication status.
+    """
+    if current_user:
+        return current_user
+    else:
+        return {"message": "Not authenticated", "user": None}
 
 
 @router.put(
@@ -105,25 +141,28 @@ async def get_new_access_token(
     return {"access_token": access_token}
 
 
-async def async_get_user_from_uuid(
-    uuid: str, user_repository: UserRepository = Depends(get_user_repository)
-):
-    return await user_repository.get_user(email=uuid)
-
-
 @security.set_subject_getter
 def get_user_from_uuid(uuid: str):
+    """
+    Synchronous function to get user for authx callback.
+    This function manually creates database connection since dependency injection is not available.
+    """
     try:
-        executor = ThreadPoolExecutor(max_workers=1)
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
 
-        def run_async_in_new_loop(coro):
-            return loop.run_until_complete(coro)
+        async def get_user_async():
+            mongodb_client = AsyncIOMotorClient(settings.MONGODB_URL)
+            mongodb = mongodb_client[settings.MONGODB_DB_NAME]
+            user_repo = UserRepository(mongodb)
 
-        future = executor.submit(run_async_in_new_loop, async_get_user_from_uuid(uuid))
-        return future.result()
+            try:
+                user = await user_repo.get_user(email=uuid)
+                return user
+            finally:
+                mongodb_client.close()
 
-    finally:
-        loop.close()
-        executor.shutdown()
+        user = asyncio.run(get_user_async())
+        return user
+
+    except Exception as e:
+        print(f"Error getting user {uuid}: {e}")
+        return None
