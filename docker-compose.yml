@@ -12,10 +12,16 @@ services:
       - ./backend/var.env
     depends_on:
       mongo:
-        condition: service_started
+        condition: service_healthy
     networks:
       - lateralthinking-network
     command: bash ./setup.sh
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
   frontend:
     container_name: lateralthinking-frontend
@@ -28,7 +34,7 @@ services:
       - "3000:3000"
     depends_on:
       backend:
-        condition: service_started
+        condition: service_healthy
     command: npm run start
     
     networks:
@@ -46,6 +52,12 @@ services:
       - "27017:27017"
     networks:
       - lateralthinking-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
 
 networks:
