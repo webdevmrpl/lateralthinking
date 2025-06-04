@@ -32,7 +32,7 @@ function Home() {
                     console.error('There was an error generating the session ID!', error);
                 });
         } else {
-            navigate(`/game/${encodeURIComponent(story.title)}/${story._id}`);
+            navigate(`/game/${story._id}`);
         }
     };
 
