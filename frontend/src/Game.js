@@ -1,12 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import Cookies from 'js-cookie';
 import confetti from 'canvas-confetti';
+import { useAuth } from './contexts/AuthContext';
+import api from './utils/axiosConfig';
 import './styles/Game.css';
 
 function Game() {
-    const { storyId } = useParams(); // storyTitle is not directly used for API calls here
+    const { storyId } = useParams();
     const [story, setStory] = useState(null);
     const [hintUsed, setHintUsed] = useState(null);
     const [guessedKeyPoints, setGuessedKeyPoints] = useState([]);
@@ -16,6 +17,7 @@ function Game() {
     const [isCompleted, setIsCompleted] = useState(false);
     const messagesEndRef = useRef(null);
     const navigate = useNavigate();
+    const { currentUser } = useAuth();
     const sessionId = Cookies.get(`session_id_${storyId}`);
 
     useEffect(() => {
@@ -25,12 +27,17 @@ function Game() {
     }, [messages]);
 
     useEffect(() => {
+        if (!currentUser) {
+            navigate('/login', { state: { message: 'Please log in to play the game.' } });
+            return;
+        }
+
         if (!sessionId) {
             console.error('Session ID not found. Please start a new game from the stories page.');
             return;
         }
 
-        axios.get(`http://localhost:8001/conversation/get_chat_by_session/${sessionId}`)
+        api.get(`/conversation/get_chat_by_session/${sessionId}`)
             .then(response => {
                 const storyData = response.data.story;
                 setStory(storyData);
@@ -52,8 +59,11 @@ function Game() {
             })
             .catch(error => {
                 console.error('There was an error fetching the game state!', error);
+                if (error.response?.status === 401) {
+                    navigate('/login', { state: { message: 'Your session has expired. Please log in again.' } });
+                }
             });
-    }, [sessionId, storyId, navigate]);
+    }, [sessionId, storyId, navigate, currentUser]);
 
     useEffect(() => {
         if (story && guessedKeyPoints.length > 0 && guessedKeyPoints.every(Boolean)) {
@@ -78,7 +88,7 @@ function Game() {
         setUserInput('');
         setIsTyping(true);
 
-        axios.post(`http://localhost:8001/conversation/send_user_message`, {
+        api.post(`/conversation/send_user_message`, {
             session_id: sessionId,
             message: messageContent
         })
@@ -107,14 +117,18 @@ function Game() {
                 setMessages(prevMessages => prevMessages.filter(m => m !== optimisticUserMessage));
                 setIsTyping(false);
                 setMessages(prevMessages => [...prevMessages, { role: 'system', text: 'Error: Could not send message. Please try again.' }]);
+
+                if (error.response?.status === 401) {
+                    navigate('/login', { state: { message: 'Your session has expired. Please log in again.' } });
+                }
             });
     };
     
     const handleRestart = () => {
-        axios.post(`http://localhost:8001/conversation/delete_chat_by_session/${sessionId}`)
+        api.post(`/conversation/delete_chat_by_session/${sessionId}`)
             .then(() => {
                 Cookies.remove(`session_id_${storyId}`);
-                return axios.post(`http://localhost:8001/conversation/get_session_id?story_id=${storyId}`);
+                return api.post(`/conversation/get_session_id?story_id=${storyId}`);
             })
             .then(response => {
                 Cookies.set(`session_id_${storyId}`, response.data.session_id, { expires: 7 });
@@ -122,6 +136,9 @@ function Game() {
             })
             .catch(error => {
                 console.error('There was an error restarting the session!', error);
+                if (error.response?.status === 401) {
+                    navigate('/login', { state: { message: 'Your session has expired. Please log in again.' } });
+                }
             });
     };
 
