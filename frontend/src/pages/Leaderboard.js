@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import api from './utils/axiosConfig';
-import './styles/Leaderboard.css';
+import api from '../utils/axiosConfig';
+import '../styles/LeaderBoard.css';
 
 function Leaderboard() {
     const [leaderboardData, setLeaderboardData] = useState([]);
@@ -20,7 +20,7 @@ function Leaderboard() {
         try {
             setLoading(true);
             const response = await api.get('/conversation/leaderboard');
-            setLeaderboardData(response.data);
+            setLeaderboardData(Array.isArray(response.data) ? response.data : []);
             setLoading(false);
         } catch (error) {
             console.error('Error fetching leaderboard:', error);
@@ -38,6 +38,7 @@ function Leaderboard() {
     };
 
     const getSortedData = () => {
+        if (!Array.isArray(leaderboardData)) return [];
         const sortableData = [...leaderboardData];
         if (sortConfig.key) {
             sortableData.sort((a, b) => {
