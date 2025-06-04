@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { Link, useNavigate } from 'react-router-dom';
+import api from './utils/axiosConfig';
+import { useAuth } from './contexts/AuthContext';
 import Cookies from 'js-cookie';
 import './styles/Home.css';
 
@@ -9,9 +10,10 @@ function Home() {
     const [isHowToPlayModalOpen, setIsHowToPlayModalOpen] = useState(false);
     const [isSampleGameplayModalOpen, setIsSampleGameplayModalOpen] = useState(false);
     const navigate = useNavigate();
+    const { currentUser, logout } = useAuth();
 
     useEffect(() => {
-        axios.get('http://localhost:8001/stories/')
+        api.get('/stories/')
             .then(response => {
                 setStories(response.data);
             })
@@ -20,19 +22,25 @@ function Home() {
             });
     }, []);
 
+    const handleLogout = () => {
+        localStorage.removeItem('jwt_access_token');
+        localStorage.removeItem('jwt_refresh_token');
+        logout();
+    }
+
     const handleStoryClick = (story) => {
         const sessionId = Cookies.get(`session_id_${story._id}`);
         if (!sessionId) {
-            axios.post(`http://localhost:8001/conversation/get_session_id?story_id=${story._id}`)
+            api.post(`/conversation/get_session_id?story_id=${story._id}`)
                 .then(response => {
                     Cookies.set(`session_id_${story._id}`, response.data.session_id, { expires: 7 });
-                    navigate(`/game/${encodeURIComponent(story.title)}/${story._id}`);
+                    navigate(`/game/${story._id}`);
                 })
                 .catch(error => {
                     console.error('There was an error generating the session ID!', error);
                 });
         } else {
-            navigate(`/game/${encodeURIComponent(story.title)}/${story._id}`);
+            navigate(`/game/${story._id}`);
         }
     };
 
@@ -59,13 +67,32 @@ function Home() {
         }
     };
     
-
     return (
         <div className="home">
             <header className="menu">
-                <nav>
-                    <button className="menu-btn" onClick={handleHowToPlayModalOpen}>How to play?</button>
-                    <button className="menu-btn" onClick={handleSampleGameplayModalOpen}>Ask, Think, Discover!</button>
+                <nav className="menu-layout">
+                    <div className="menu-left">
+                        <Link to="/leaderboard" className="menu-btn">Leaderboard</Link>
+                    </div>
+
+                    <div className="menu-center">
+                        <button className="menu-btn" onClick={handleHowToPlayModalOpen}>How to play?</button>
+                        <button className="menu-btn" onClick={handleSampleGameplayModalOpen}>Ask, Think, Discover!</button>
+                    </div>
+
+                    <div className="menu-right">
+                        {currentUser ? (
+                            <>
+                             <span className="menu-user">Logged in as: <b>{currentUser.username}</b></span>
+                             <button className="menu-btn" onClick={handleLogout}>Logout</button>
+                         </>
+                        ) : (
+                            <>
+                                <Link to="/login" className="menu-btn">Login</Link>
+                                <Link to="/register" className="menu-btn">Register</Link>
+                            </>
+                        )}
+                    </div>
                 </nav>
                 <h1 className="title">LATERAL THINKING GAME</h1>
             </header>

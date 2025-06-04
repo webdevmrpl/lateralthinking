@@ -32,17 +32,48 @@ body {
     margin-bottom: 20px;
 }
 
+.home .menu-layout {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 90%;
+    max-width: 1200px;
+    padding: 0 20px;
+    margin-bottom: 0 auto 15px auto;
+}
+
+.home .menu-left {
+    flex: 1;
+    display: flex;
+    justify-content: flex-start;
+    padding-left: 10px;
+}
+
+.home .menu-center {
+    flex: 2.5;
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+}
+
+.home .menu-right {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 20px;
+    padding-right: 10px;
+}
+
 .home .menu-btn {
-    width: auto;
-    height: auto;
     text-decoration: none;
     background-color: #63918b;
     color: black;
     border: none;
-    padding: 15px 30px;
-    border-radius: 10px;
+    padding: 10px 14px;
+    border-radius: 6px;
     cursor: pointer;
-    font-size: 1.2rem;
+    font-size: 1rem;
     font-weight: normal;
     transition: transform 0.2s ease, background 0.3s ease;
     font-family: 'Georgia', serif;

@@ -1,0 +1,150 @@
+.leaderboard-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+.leaderboard-container .menu {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #4b7b67;
+    padding: 20px 30px;
+    color: white;
+    border-bottom: 3px solid #63918b;
+}
+
+.leaderboard-container .menu-btn {
+    text-decoration: none;
+    background-color: #63918b;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: bold;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    cursor: pointer;
+    border: none;
+}
+
+.leaderboard-container .menu-btn:hover {
+    transform: scale(1.05);
+    background-color: #4e7a75;
+}
+
+.leaderboard-container .title {
+    font-size: 2rem;
+    font-weight: bold;
+    color: white;
+    text-align: center;
+    letter-spacing: 2px;
+    padding-right: 20%;
+    text-transform: uppercase;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.leaderboard-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px;
+    flex: 1;
+}
+
+.leaderboard-table {
+    width: 80%;
+    max-width: 1000px;
+    border-collapse: collapse;
+    background-color: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.leaderboard-table th,
+.leaderboard-table td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.leaderboard-table th {
+    background-color: #63918b;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.leaderboard-table th:hover {
+    background-color: #4b7b67;
+}
+
+.leaderboard-table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.leaderboard-table tbody tr:hover {
+    background-color: #e8f1f1;
+}
+
+.leaderboard-table tbody tr:first-child {
+    background-color: rgba(255, 215, 0, 0.1);
+}
+
+.leaderboard-table tbody tr:first-child td {
+    font-weight: bold;
+    color: #333;
+}
+
+.error-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #ffebee;
+    padding: 20px;
+    border-radius: 10px;
+    margin: 50px auto;
+    max-width: 500px;
+    text-align: center;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.error-message p {
+    color: #c62828;
+    margin-bottom: 20px;
+}
+
+.no-data {
+    text-align: center;
+    font-style: italic;
+    color: #666;
+    padding: 30px 0;
+}
+
+@media (max-width: 768px) {
+    .leaderboard-container .title {
+        font-size: 1.5rem;
+        padding-right: 0;
+    }
+    
+    .leaderboard-content {
+        padding: 15px;
+    }
+    
+    .leaderboard-table {
+        width: 95%;
+    }
+    
+    .leaderboard-table th,
+    .leaderboard-table td {
+        padding: 10px;
+        font-size: 0.9rem;
+    }
+}
