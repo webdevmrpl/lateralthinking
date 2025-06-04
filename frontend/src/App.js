@@ -15,24 +15,9 @@ function App() {
                 <Routes>
                     <Route path="/login" element={<LoginForm />} />
                     <Route path="/register" element={<RegisterForm />} />
-                    <Route
-                        path="/"
-                        element={
-                            <ProtectedRoute>
-                                <Home />
-                            </ProtectedRoute>
-                        }
-                    />
-                    <Route
-                        path="/game/:storyId"
-                        element={
-                            <ProtectedRoute>
-                                <Game />
-                            </ProtectedRoute>
-                        }
-                    />
-                    <Route
-                        path="/leaderboard"
+                    <Route path="/" element={<Home />}/>
+                    <Route path="/game/:storyId" element={<Game />}/>
+                    <Route path="/leaderboard"
                         element={
                             <ProtectedRoute>
                                 <Leaderboard />
