@@ -96,7 +96,6 @@ export const AuthProvider = ({ children }) => {
     removeToken();
     removeRefreshToken();
     setCurrentUser(null);
-    navigate('/login');
   };
 
   const value = {

@@ -23,6 +23,8 @@ function Home() {
     }, []);
 
     const handleLogout = () => {
+        localStorage.removeItem('jwt_access_token');
+        localStorage.removeItem('jwt_refresh_token');
         logout();
     }
 

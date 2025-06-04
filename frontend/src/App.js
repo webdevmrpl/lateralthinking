@@ -17,13 +17,7 @@ function App() {
                     <Route path="/register" element={<RegisterForm />} />
                     <Route path="/" element={<Home />}/>
                     <Route path="/game/:storyId" element={<Game />}/>
-                    <Route path="/leaderboard"
-                        element={
-                            <ProtectedRoute>
-                                <Leaderboard />
-                            </ProtectedRoute>
-                        }
-                    />
+                    <Route path="/leaderboard" element={<Leaderboard />}/>
                     <Route path="*" element={<Navigate to="/" />} />
                 </Routes>
             </AuthProvider>
