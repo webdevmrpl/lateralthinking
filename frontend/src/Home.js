@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import api from './utils/axiosConfig';
+import { useAuth } from './contexts/AuthContext';
 import Cookies from 'js-cookie';
 import './styles/Home.css';
 
@@ -9,6 +10,7 @@ function Home() {
     const [isHowToPlayModalOpen, setIsHowToPlayModalOpen] = useState(false);
     const [isSampleGameplayModalOpen, setIsSampleGameplayModalOpen] = useState(false);
     const navigate = useNavigate();
+    const { currentUser, logout } = useAuth();
 
     useEffect(() => {
         api.get('/stories/')
@@ -19,6 +21,10 @@ function Home() {
                 console.error('There was an error fetching the stories!', error);
             });
     }, []);
+
+    const handleLogout = () => {
+        logout();
+    }
 
     const handleStoryClick = (story) => {
         const sessionId = Cookies.get(`session_id_${story._id}`);
@@ -59,13 +65,24 @@ function Home() {
         }
     };
     
-
     return (
         <div className="home">
             <header className="menu">
                 <nav>
                     <button className="menu-btn" onClick={handleHowToPlayModalOpen}>How to play?</button>
                     <button className="menu-btn" onClick={handleSampleGameplayModalOpen}>Ask, Think, Discover!</button>
+                    <Link to="/leaderboard" className="menu-btn">Leaderboard</Link>
+                    {currentUser ? (
+                        <>
+                            <span className="menu-user">Zalogowano jako: <b>{currentUser.username}</b></span>
+                            <button className="menu-btn" onClick={handleLogout}>Logout</button>
+                        </>
+                    ) : (
+                        <>
+                            <Link to="/login" className="menu-btn">Login</Link>
+                            <Link to="/register" className="menu-btn">Register</Link>
+                        </>
+                    )}
                 </nav>
                 <h1 className="title">LATERAL THINKING GAME</h1>
             </header>
