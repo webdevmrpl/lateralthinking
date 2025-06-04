@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from './utils/axiosConfig';
 import Cookies from 'js-cookie';
 import './styles/Home.css';
 
@@ -11,7 +11,7 @@ function Home() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        axios.get('http://localhost:8001/stories/')
+        api.get('/stories/')
             .then(response => {
                 setStories(response.data);
             })
@@ -23,10 +23,10 @@ function Home() {
     const handleStoryClick = (story) => {
         const sessionId = Cookies.get(`session_id_${story._id}`);
         if (!sessionId) {
-            axios.post(`http://localhost:8001/conversation/get_session_id?story_id=${story._id}`)
+            api.post(`/conversation/get_session_id?story_id=${story._id}`)
                 .then(response => {
                     Cookies.set(`session_id_${story._id}`, response.data.session_id, { expires: 7 });
-                    navigate(`/game/${encodeURIComponent(story.title)}/${story._id}`);
+                    navigate(`/game/${story._id}`);
                 })
                 .catch(error => {
                     console.error('There was an error generating the session ID!', error);
