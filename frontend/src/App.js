@@ -1,11 +1,12 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import ProtectedRoute from './components/auth/PtotectedRoute';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import ProtectedRoute from './components/auth/ProtectedRoute';
+import { AuthProvider } from './contexts/AuthContext';
 import LoginForm from './components/auth/LoginForm';
 import RegisterForm from './components/auth/RegisterForm';
 import Home from './Home';
 import Game from './Game';
-import Leaderboard from './Leaderboard';
+import Leaderboard from './pages/LeaderBoard';
 
 function App() {
     return (
