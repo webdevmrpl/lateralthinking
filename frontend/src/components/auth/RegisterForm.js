@@ -38,6 +38,7 @@ const RegisterForm = () => {
   
   return (
     <div className="auth-container">
+      <Link to="/" className="go-home-btn">← Home</Link>
       <div className="auth-form-container">
         <h1>Register</h1>
         {error && <div className="auth-error">{error}</div>}
@@ -105,6 +106,9 @@ const RegisterForm = () => {
           <p>
             Already have an account? <Link to="/login">Login</Link>
           </p>
+          <Link to="/" className="guest-link">
+            Continue as Guest
+          </Link>
         </div>
       </div>
     </div>

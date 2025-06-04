@@ -28,46 +28,49 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="auth-form-container">
-      <form className="auth-form" onSubmit={handleSubmit}>
+    <div className="auth-container">
+      <Link to="/" className="go-home-btn">← Home</Link>
+      <div className="auth-form-container">
         <h2>Login</h2>
         {error && <div className="error-message">{error}</div>}
 
-        <div className="form-group">
-          <label htmlFor="email">Email</label>
-          <input
-            type="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
+        <form className="auth-form" onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label htmlFor="email">Email</label>
+            <input
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
 
-        <div className="form-group">
-          <label htmlFor="password">Password</label>
-          <input
-            type="password"
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
+          <div className="form-group">
+            <label htmlFor="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
 
-        <button type="submit" className="submit-btn" disabled={isLoading}>
-          {isLoading ? 'Logging in...' : 'Login'}
-        </button>
+          <button type="submit" className="submit-btn" disabled={isLoading}>
+            {isLoading ? 'Logging in...' : 'Login'}
+          </button>
+        </form>
 
         <div className="auth-links">
           <p>
             Don't have an account? <Link to="/register">Register</Link>
           </p>
-          <Link to="/" className="continue-without-login">
-            Continue without login
+          <Link to="/" className="guest-link">
+            Continue as Guest
           </Link>
         </div>
-      </form>
+      </div>
     </div>
   );
 }

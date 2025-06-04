@@ -70,21 +70,29 @@ function Home() {
     return (
         <div className="home">
             <header className="menu">
-                <nav>
-                    <button className="menu-btn" onClick={handleHowToPlayModalOpen}>How to play?</button>
-                    <button className="menu-btn" onClick={handleSampleGameplayModalOpen}>Ask, Think, Discover!</button>
-                    <Link to="/leaderboard" className="menu-btn">Leaderboard</Link>
-                    {currentUser ? (
-                        <>
-                            <span className="menu-user">Zalogowano jako: <b>{currentUser.username}</b></span>
-                            <button className="menu-btn" onClick={handleLogout}>Logout</button>
-                        </>
-                    ) : (
-                        <>
-                            <Link to="/login" className="menu-btn">Login</Link>
-                            <Link to="/register" className="menu-btn">Register</Link>
-                        </>
-                    )}
+                <nav className="menu-layout">
+                    <div className="menu-left">
+                        <Link to="/leaderboard" className="menu-btn">Leaderboard</Link>
+                    </div>
+
+                    <div className="menu-center">
+                        <button className="menu-btn" onClick={handleHowToPlayModalOpen}>How to play?</button>
+                        <button className="menu-btn" onClick={handleSampleGameplayModalOpen}>Ask, Think, Discover!</button>
+                    </div>
+
+                    <div className="menu-right">
+                        {currentUser ? (
+                            <>
+                             <span className="menu-user">Logged in as: <b>{currentUser.username}</b></span>
+                             <button className="menu-btn" onClick={handleLogout}>Logout</button>
+                         </>
+                        ) : (
+                            <>
+                                <Link to="/login" className="menu-btn">Login</Link>
+                                <Link to="/register" className="menu-btn">Register</Link>
+                            </>
+                        )}
+                    </div>
                 </nav>
                 <h1 className="title">LATERAL THINKING GAME</h1>
             </header>
