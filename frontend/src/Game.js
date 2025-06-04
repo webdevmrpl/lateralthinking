@@ -27,11 +27,6 @@ function Game() {
     }, [messages]);
 
     useEffect(() => {
-        if (!currentUser) {
-            navigate('/login', { state: { message: 'Please log in to play the game.' } });
-            return;
-        }
-
         if (!sessionId) {
             console.error('Session ID not found. Please start a new game from the stories page.');
             return;
