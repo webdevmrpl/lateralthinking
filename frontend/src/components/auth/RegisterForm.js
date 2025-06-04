@@ -40,6 +40,7 @@ const RegisterForm = () => {
     <div className="auth-container">
       <Link to="/" className="go-home-btn">← Home</Link>
       <div className="auth-form-container">
+        <Link to="/" className="go-home-btn">← Home</Link>
         <h1>Register</h1>
         {error && <div className="auth-error">{error}</div>}
         

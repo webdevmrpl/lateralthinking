@@ -32,6 +32,48 @@ function Game() {
             return;
         }
 
+        loadChatData();
+    }, [sessionId, storyId, navigate, currentUser]);
+
+    const loadChatData = async () => {
+        try {
+            const response = await api.get(`/conversation/get_chat_by_session/${sessionId}`);
+            if (!response.data || !response.data.story) {
+                console.error('Story data is missing in the response');
+                navigate('/', { state: { error: 'The story could not be found. Please try another story.' } });
+                return;
+            }
+            
+            const storyData = response.data.story;
+            setStory(storyData);
+            setGuessedKeyPoints(response.data.guessed_key_points);
+            setHintUsed(response.data.hints_used);
+
+            const chatFlowMessages = response.data.messages
+                .filter((msg, index) => index !== 0) 
+                .map(msg => ({
+                    role: msg.role,
+                    text: msg.content
+                }));
+
+            setMessages([
+                { role: 'system', text: `You are now playing the puzzle: ${storyData.title}.` },
+                { role: 'system', text: storyData.situation },
+                ...chatFlowMessages
+            ]);
+        } catch (error) {
+            console.error('There was an error fetching the game state!', error);
+            if (error.response?.status === 500) {
+                navigate('/', { state: { error: 'The story could not be loaded. Please try another story.' } });
+                return;
+            }   
+            
+            if (error.response?.status === 401) {
+                navigate('/login', { state: { message: 'Your session has expired. Please log in again.' } });
+            }
+        }
+    };
+/*
         api.get(`/conversation/get_chat_by_session/${sessionId}`)
             .then(response => {
                 const storyData = response.data.story;
@@ -59,13 +101,22 @@ function Game() {
                 }
             });
     }, [sessionId, storyId, navigate, currentUser]);
+*/
 
     useEffect(() => {
         if (story && guessedKeyPoints.length > 0 && guessedKeyPoints.every(Boolean)) {
             setIsCompleted(true);
             triggerConfetti();
+
+            if (currentUser) {
+                api.post('/conversation/complete_story', {
+                    session_id: sessionId,
+                    user_id: currentUser._id,
+                    username: currentUser.username
+                }).catch(error => console.error('Error updating completion status:', error));
+            }
         }
-    }, [guessedKeyPoints, story]);
+    }, [guessedKeyPoints, story, currentUser, sessionId]);
 
     const triggerConfetti = () => {
         confetti({
@@ -83,10 +134,17 @@ function Game() {
         setUserInput('');
         setIsTyping(true);
 
-        api.post(`/conversation/send_user_message`, {
+        const requestData = {
             session_id: sessionId,
             message: messageContent
-        })
+        };
+        
+        if (currentUser) {
+            requestData.user_id = currentUser._id;
+            requestData.username = currentUser.username;
+        }
+
+        api.post(`/conversation/send_user_message`, requestData)
             .then(response => {
                 const updatedStoryData = response.data.story;
                 setStory(updatedStoryData);
@@ -123,16 +181,29 @@ function Game() {
         api.post(`/conversation/delete_chat_by_session/${sessionId}`)
             .then(() => {
                 Cookies.remove(`session_id_${storyId}`);
-                return api.post(`/conversation/get_session_id?story_id=${storyId}`);
+                return api.post(`/conversation/get_session_id`, { 
+                    story_id: storyId,
+                    ...(currentUser && { user_id: currentUser._id, username: currentUser.username })
+                });
             })
             .then(response => {
+                if (!response.data || !response.data.session_id) {
+                    throw new Error('No session ID returned');
+                }
                 Cookies.set(`session_id_${storyId}`, response.data.session_id, { expires: 7 });
                 window.location.reload();
             })
             .catch(error => {
                 console.error('There was an error restarting the session!', error);
+                if (error.response?.status === 500) {
+                    navigate('/', { state: { error: 'Could not restart the game. The story may no longer exist.' } });
+                    return;
+                }
+                
                 if (error.response?.status === 401) {
                     navigate('/login', { state: { message: 'Your session has expired. Please log in again.' } });
+                } else {
+                    navigate('/', { state: { error: 'An unexpected error occurred while restarting the game. Please try again later.' } });
                 }
             });
     };

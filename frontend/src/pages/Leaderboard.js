@@ -8,7 +8,7 @@ function Leaderboard() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [sortConfig, setSortConfig] = useState({
-        key: 'score',
+        key: 'total_score', // Updated to match expected API field name
         direction: 'descending'
     });
 
@@ -20,6 +20,7 @@ function Leaderboard() {
         try {
             setLoading(true);
             const response = await api.get('/conversation/leaderboard');
+            console.log('Leaderboard API response:', response.data); // Log to see the actual structure
             setLeaderboardData(Array.isArray(response.data) ? response.data : []);
             setLoading(false);
         } catch (error) {
@@ -104,24 +105,25 @@ function Leaderboard() {
                             <th onClick={() => requestSort('username')}>
                                 Player {getSortIcon('username')}
                             </th>
-                            <th onClick={() => requestSort('score')}>
-                                Score {getSortIcon('score')}
+                            <th onClick={() => requestSort('total_score')}>
+                                Score {getSortIcon('total_score')}
                             </th>
-                            <th onClick={() => requestSort('completed_stories')}>
-                                Stories Completed {getSortIcon('completed_stories')}
+                            <th onClick={() => requestSort('total_games_completed')}>
+                                Stories Completed {getSortIcon('total_games_completed')}
                             </th>
                         </tr>
                     </thead>
                     <tbody>
-                        {getSortedData().map((player, index) => (
-                            <tr key={player.username || index}>
-                                <td>{index + 1}</td>
-                                <td>{player.username}</td>
-                                <td>{player.score}</td>
-                                <td>{player.completed_stories || 0}</td>
-                            </tr>
-                        ))}
-                        {leaderboardData.length === 0 && (
+                        {getSortedData().length > 0 ? (
+                            getSortedData().map((player, index) => (
+                                <tr key={player.username || index}>
+                                    <td>{index + 1}</td>
+                                    <td>{player.username}</td>
+                                    <td>{player.total_score}</td>
+                                    <td>{player.total_games_completed || 0}</td>
+                                </tr>
+                            ))
+                        ) : (
                             <tr>
                                 <td colSpan="4" className="no-data">No leaderboard data available yet</td>
                             </tr>
