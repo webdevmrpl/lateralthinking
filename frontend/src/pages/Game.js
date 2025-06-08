@@ -2,9 +2,9 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import confetti from 'canvas-confetti';
-import { useAuth } from './contexts/AuthContext';
-import api from './utils/axiosConfig';
-import './styles/Game.css';
+import { useAuth } from '../contexts/AuthContext';
+import api from '../utils/axiosConfig';
+import '../styles/Game.css';
 
 function Game() {
     const { storyId } = useParams();

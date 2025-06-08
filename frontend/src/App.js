@@ -4,8 +4,8 @@ import ProtectedRoute from './components/auth/ProtectedRoute';
 import { AuthProvider } from './contexts/AuthContext';
 import LoginForm from './components/auth/LoginForm';
 import RegisterForm from './components/auth/RegisterForm';
-import Home from './Home';
-import Game from './Game';
+import Home from './pages/Home';
+import Game from './pages/Game';
 import Leaderboard from './pages/LeaderBoard';
 
 function App() {
