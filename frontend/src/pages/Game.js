@@ -2,9 +2,9 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import confetti from 'canvas-confetti';
-import { useAuth } from './contexts/AuthContext';
-import api from './utils/axiosConfig';
-import './styles/Game.css';
+import { useAuth } from '../contexts/AuthContext';
+import api from '../utils/axiosConfig';
+import '../styles/Game.css';
 
 function Game() {
     const { storyId } = useParams();
@@ -73,35 +73,6 @@ function Game() {
             }
         }
     };
-/*
-        api.get(`/conversation/get_chat_by_session/${sessionId}`)
-            .then(response => {
-                const storyData = response.data.story;
-                setStory(storyData);
-                setGuessedKeyPoints(response.data.guessed_key_points);
-                setHintUsed(response.data.hints_used);
-
-                const chatFlowMessages = response.data.messages
-                    .filter((msg, index) => index !== 0) 
-                    .map(msg => ({
-                        role: msg.role,
-                        text: msg.content
-                    }));
-
-                setMessages([
-                    { role: 'system', text: `You are now playing the puzzle: ${storyData.title}.` },
-                    { role: 'system', text: storyData.situation },
-                    ...chatFlowMessages
-                ]);
-            })
-            .catch(error => {
-                console.error('There was an error fetching the game state!', error);
-                if (error.response?.status === 401) {
-                    navigate('/login', { state: { message: 'Your session has expired. Please log in again.' } });
-                }
-            });
-    }, [sessionId, storyId, navigate, currentUser]);
-*/
 
     useEffect(() => {
         if (story && guessedKeyPoints.length > 0 && guessedKeyPoints.every(Boolean)) {

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import api from './utils/axiosConfig';
-import { useAuth } from './contexts/AuthContext';
+import api from '../utils/axiosConfig';
+import { useAuth } from '../contexts/AuthContext';
 import Cookies from 'js-cookie';
-import './styles/Home.css';
+import '../styles/Home.css';
 
 function Home() {
     const [stories, setStories] = useState([]);
