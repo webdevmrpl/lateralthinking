@@ -8,7 +8,7 @@ function Leaderboard() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [sortConfig, setSortConfig] = useState({
-        key: 'total_score', // Updated to match expected API field name
+        key: 'total_score',
         direction: 'descending'
     });
 
@@ -20,7 +20,7 @@ function Leaderboard() {
         try {
             setLoading(true);
             const response = await api.get('/conversation/leaderboard');
-            console.log('Leaderboard API response:', response.data); // Log to see the actual structure
+            console.log('Leaderboard API response:', response.data); 
             setLeaderboardData(Array.isArray(response.data) ? response.data : []);
             setLoading(false);
         } catch (error) {
